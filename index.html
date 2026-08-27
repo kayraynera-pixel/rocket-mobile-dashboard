@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rocket Mobile — Performance Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --navy: #14193D;
+    --navy-light: #1c2354;
+    --card: #1a2050;
+    --border: #2b3268;
+    --pink: #FB3C8D;
+    --teal: #0EE7E1;
+    --purple: #9900FF;
+    --text-primary: #F3F4FB;
+    --text-secondary: #A7ABD1;
+    --text-muted: #767BA6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--navy);
+    color: var(--text-primary);
+    line-height: 1.5;
+    padding: 32px 40px 60px;
+}
+.dash-header { margin-bottom: 28px; }
+.dash-header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+.dash-header .sub { color: var(--text-secondary); font-size: 13px; margin-top: 6px; }
+.dash-header .sub strong { color: var(--teal); }
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+}
+.section-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    margin-bottom: 4px;
+}
+.section-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 28px; }
+.kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+}
+.kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: var(--kpi-accent, var(--teal)); }
+.kpi-card.accent-teal   { --kpi-accent: var(--teal); }
+.kpi-card.accent-pink   { --kpi-accent: var(--pink); }
+.kpi-card.accent-purple { --kpi-accent: var(--purple); }
+.kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; }
+.kpi-value { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+.kpi-sub { font-size: 12px; }
+.kpi-note { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+.badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 5px; }
+.badge.pos { background: rgba(14,231,225,0.15); color: var(--teal); }
+.badge.neg { background: rgba(251,60,141,0.15); color: var(--pink); }
+.badge.neu { background: rgba(167,171,209,0.12); color: var(--text-muted); }
+
+.rr-line { font-size: 11px; color: var(--purple); margin-top: 6px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.rr-line strong { font-weight: 600; }
+
+.asof-table { font-size: 12px; margin-bottom: 24px; }
+.asof-table .card-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+.asof-row { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.asof-item { display: flex; align-items: baseline; gap: 5px; color: var(--text-secondary); }
+.asof-item .plat { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
+.asof-item .stale { color: var(--pink); }
+
+.pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+.pill.pos { background: rgba(14,231,225,0.15); color: var(--teal); }
+.pill.neg { background: rgba(251,60,141,0.18); color: var(--pink); }
+.pill.warn { background: rgba(153,0,255,0.18); color: #c98bff; }
+.pill.neu { background: rgba(167,171,209,0.12); color: var(--text-muted); }
+
+.tag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 4px; margin-left: 4px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+    text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px;
+    color: var(--text-muted); font-weight: 600; padding: 8px 12px; border-bottom: 1px solid var(--border);
+}
+tbody td { padding: 10px 12px; border-bottom: 1px solid rgba(43,50,104,0.5); }
+tbody tr:last-child td { border-bottom: none; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.empty-row { text-align: center; color: var(--text-muted); padding: 18px; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="dash-header">
+    <h1>Rocket Mobile — Performance Dashboard</h1>
+    <div class="sub">As of <strong>25 Aug 2026</strong> &middot; Month-to-date vs same 25 elapsed day(s) last month (<strong>1 Jul – 25 Jul 2026</strong>) &middot; Currency: NZD</div>
+</div>
+
+<section class="card asof-table">
+    <div class="card-title">Data as of (per platform)</div>
+    <div class="asof-row"><div class="asof-item"><span class="plat">Google</span> <span class="">28 Aug</span></div><div class="asof-item"><span class="plat">Meta</span> <span class="">27 Aug</span></div><div class="asof-item"><span class="plat">TikTok</span> <span class="">27 Aug</span></div><div class="asof-item"><span class="plat">ChatGPT Ads</span> <span class="">27 Aug</span></div><div class="asof-item"><span class="plat">Twitch</span> <span class="stale">12 Aug</span> <span class="stale">(13d behind)</span></div><div class="asof-item"><span class="plat">Demand Gen</span> <span class="">23 Aug</span></div><div class="asof-item"><span class="plat">GA4</span> <span class="">27 Aug</span></div><div class="asof-item"><span class="plat">SERVCO</span> <span class="">25 Aug</span></div></div>
+</section>
+
+<section>
+    <div class="section-title">KPI Summary</div>
+    <div class="section-sub">SERVCO gross adds are the only source of truth for sales performance. Platform-reported conversions are directional only.</div>
+    <div class="kpi-row">
+        <div class="kpi-card accent-teal">
+            <div class="kpi-label">Blended CPA</div>
+            <div class="kpi-value">$52</div>
+            <div class="kpi-sub"><span class="badge neg">&#9650; 12.5% vs LM</span></div>
+            <div class="kpi-note">Estimate: all paid channels' media spend + agency fee ($19,057/mo &divide; 31 days &times; 25 elapsed = $15,369)</div>
+        </div>
+        <div class="kpi-card accent-pink">
+            <div class="kpi-label">SERVCO Gross Adds (MTD)</div>
+            <div class="kpi-value">1,679</div>
+            <div class="kpi-sub"><span class="badge pos">&#9650; 1.3% vs LM</span></div>
+            <div class="kpi-note">Source of truth for sales — not platform conversions.</div><div class="rr-line">Run-rate <strong>2,082</strong> <span class="badge neg">&#9660; 0.5% vs full LM</span></div>
+        </div>
+        <div class="kpi-card accent-purple">
+            <div class="kpi-label">Blended Spend incl. fees (MTD)</div>
+            <div class="kpi-value">$87,548</div>
+            <div class="kpi-sub"><span class="badge neg">&#9650; 13.9% vs LM</span></div>
+            <div class="kpi-note">All paid channels.</div><div class="rr-line">Run-rate <strong>$108,559</strong> <span class="badge neg">&#9650; 17.2% vs full LM</span></div>
+        </div>
+        <div class="kpi-card accent-teal">
+            <div class="kpi-label">GA4 Sessions (MTD)</div>
+            <div class="kpi-value">59,927</div>
+            <div class="kpi-sub"><span class="badge pos">&#9650; 9.0% vs LM</span></div>
+            <div class="kpi-note">Traffic level, all channels.</div><div class="rr-line">Run-rate <strong>74,309</strong> <span class="badge pos">&#9650; 10.5% vs full LM</span></div>
+        </div></div>
+</section>
+
+<section class="card">
+    <div class="section-title">Budget Pacing</div>
+    <div class="section-sub">MTD spend vs budget target, prorated by day-of-month (25 of 31 days). Raw platform spend, before agency fee.</div>
+    <table>
+        <thead><tr><th>Platform</th><th class="num">MTD Spend</th><th class="num">Expected (prorated)</th><th class="num">% of Pace</th><th>Status</th></tr></thead>
+        <tbody>
+        <tr>
+            <td>Google Search</td>
+            <td class="num">$44,772</td>
+            <td class="num">$44,355</td>
+            <td class="num">100.9%</td>
+            <td><span class="pill pos">On-pace</span></td>
+        </tr>
+        <tr>
+            <td>Google PMax</td>
+            <td class="num">$7,719</td>
+            <td class="num">$8,065</td>
+            <td class="num">95.7%</td>
+            <td><span class="pill pos">On-pace</span></td>
+        </tr>
+        <tr>
+            <td>Meta</td>
+            <td class="num">$10,031</td>
+            <td class="num">$10,480</td>
+            <td class="num">95.7%</td>
+            <td><span class="pill pos">On-pace</span></td>
+        </tr>
+        <tr>
+            <td>TikTok</td>
+            <td class="num">$4,378</td>
+            <td class="num">$4,203</td>
+            <td class="num">104.2%</td>
+            <td><span class="pill pos">On-pace</span></td>
+        </tr>
+        <tr>
+            <td>Twitch</td>
+            <td class="num">$1,890</td>
+            <td class="num">$1,524</td>
+            <td class="num">124.0%</td>
+            <td><span class="pill neg">Over-pace</span></td>
+        </tr>
+        <tr>
+            <td>ChatGPT Ads</td>
+            <td class="num">$1,958</td>
+            <td class="num">$1,892</td>
+            <td class="num">103.5%</td>
+            <td><span class="pill pos">On-pace</span></td>
+        </tr>
+        <tr>
+            <td>Demand Gen</td>
+            <td class="num">$1,432</td>
+            <td class="num">$2,823</td>
+            <td class="num">50.7%</td>
+            <td><span class="pill warn">Under-pace</span></td>
+        </tr></tbody>
+    </table>
+</section>
+
+<section class="card">
+    <div class="section-title">Media Efficiency</div>
+    <div class="section-sub">Blended CPA = total media spend across all paid channels (Google, Meta, TikTok, Twitch, ChatGPT Ads, Demand Gen) plus a prorated share of the monthly agency fee, divided by SERVCO gross adds. CPC, conversion rate, and CPA below use platform-reported conversions — directional only, compared against the same elapsed days last month.</div>
+    <table>
+        <thead><tr><th>Platform</th><th class="num">Spend (MTD)</th><th class="num">CPC</th><th class="num">Conv. Rate</th><th class="num">CPA</th></tr></thead>
+        <tbody>
+        <tr>
+            <td>Google Search</td>
+            <td class="num">$44,772</td>
+            <td class="num">$3 <span class="badge pos">&#9660; 5.3% vs LM</span></td>
+            <td class="num">7.62% <span class="badge neg">&#9660; 5.8% vs LM</span></td>
+            <td class="num">$40 <span class="badge neg">&#9650; 0.6% vs LM</span></td>
+        </tr>
+        <tr>
+            <td>Google PMax</td>
+            <td class="num">$7,719</td>
+            <td class="num">$2 <span class="badge pos">&#9660; 19.1% vs LM</span></td>
+            <td class="num">5.22% <span class="badge neg">&#9660; 40.9% vs LM</span></td>
+            <td class="num">$34 <span class="badge neg">&#9650; 37.0% vs LM</span></td>
+        </tr>
+        <tr>
+            <td>Meta</td>
+            <td class="num">$10,031</td>
+            <td class="num">$1 <span class="badge neu">—</span></td>
+            <td class="num">0.00% <span class="badge neu">—</span></td>
+            <td class="num">— <span class="badge neu">—</span></td>
+        </tr></tbody>
+    </table>
+    <div style="margin-top:18px; font-size:12px; color:var(--text-muted);">Upper-funnel channels — also included in Blended CPA above, shown here by CPM/CTR for efficiency tracking</div>
+    <table style="margin-top:6px;">
+        <thead><tr><th>Channel</th><th class="num">Spend (MTD)</th><th class="num">Impressions</th><th class="num">CPM</th><th class="num">CTR</th></tr></thead>
+        <tbody>
+        <tr>
+            <td>TikTok</td>
+            <td class="num">$4,378<div class="rr-line">Run-rate <strong>$5,429</strong> <span class="badge neg">&#9650; 0.0% vs full LM</span></div></td>
+            <td class="num">2,220,769</td>
+            <td class="num">$1.97 <span class="badge neg">&#9650; 12.8% vs LM</span></td>
+            <td class="num">0.19% <span class="badge neg">&#9660; 6.9% vs LM</span></td>
+        </tr>
+        <tr>
+            <td>Twitch</td>
+            <td class="num">$1,890<div class="rr-line">Run-rate <strong>$2,343</strong> <span class="badge pos">&#9660; 45.8% vs full LM</span></div></td>
+            <td class="num">73,161</td>
+            <td class="num">$25.83 <span class="badge neg">&#9650; 114.1% vs LM</span></td>
+            <td class="num">0.21% <span class="badge pos">&#9650; 58.1% vs LM</span></td>
+        </tr>
+        <tr>
+            <td>Demand Gen</td>
+            <td class="num">$1,432<div class="rr-line">Run-rate <strong>$1,776</strong> <span class="badge neu">—</span></div></td>
+            <td class="num">119,860</td>
+            <td class="num">$11.95 <span class="badge neu">—</span></td>
+            <td class="num">2.23% <span class="badge neu">—</span></td>
+        </tr>
+        <tr>
+            <td>ChatGPT Ads</td>
+            <td class="num">$1,958<div class="rr-line">Run-rate <strong>$2,428</strong> <span class="badge neg">&#9650; 78.5% vs full LM</span></div><div class="kpi-note" style="margin-top:4px;">Own CPA —, no fee</div></td>
+            <td class="num">96,079</td>
+            <td class="num">$20.38 <span class="badge pos">&#9660; 14.2% vs LM</span></td>
+            <td class="num">0.73% <span class="badge neg">&#9660; 24.0% vs LM</span></td>
+        </tr></tbody>
+    </table>
+</section>
+
+<section class="card">
+    <div class="section-title">Traffic Levels</div>
+    <div class="section-sub">GA4 sessions/users, plus channel-mix breakdown. Conversions shown here are directional, same rule as platform ads.</div>
+    <div class="kpi-row" style="margin-bottom:18px;">
+        <div class="kpi-card accent-teal">
+            <div class="kpi-label">Sessions (MTD)</div>
+            <div class="kpi-value">59,927</div>
+            <div class="kpi-sub"><span class="badge pos">&#9650; 9.0% vs LM</span></div>
+            <div class="rr-line">Run-rate <strong>74,309</strong> <span class="badge pos">&#9650; 10.5% vs full LM</span></div>
+        </div>
+        <div class="kpi-card accent-purple">
+            <div class="kpi-label">Users (MTD)</div>
+            <div class="kpi-value">52,238</div>
+            <div class="kpi-sub"><span class="badge pos">&#9650; 10.2% vs LM</span></div>
+            <div class="rr-line">Run-rate <strong>64,775</strong> <span class="badge pos">&#9650; 12.0% vs full LM</span></div>
+        </div>
+        <div class="kpi-card accent-pink">
+            <div class="kpi-label">Conversions (MTD)</div>
+            <div class="kpi-value">3,946 <span class="tag">directional</span></div>
+            <div class="kpi-sub"><span class="badge pos">&#9650; 23.8% vs LM</span></div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>Channel (session default grouping)</th><th class="num">Sessions</th><th class="num">Share</th><th class="num">vs Last Month</th><th class="num">Users</th></tr></thead>
+        <tbody>
+            <tr>
+                <td>Paid Social</td>
+                <td class="num">17,336</td>
+                <td class="num">28.9%</td>
+                <td class="num"><span class="badge pos">&#9650; 0.3% vs LM</span></td>
+                <td class="num">16,870</td>
+            </tr>
+            <tr>
+                <td>Paid Search</td>
+                <td class="num">17,151</td>
+                <td class="num">28.6%</td>
+                <td class="num"><span class="badge pos">&#9650; 8.2% vs LM</span></td>
+                <td class="num">13,794</td>
+            </tr>
+            <tr>
+                <td>Direct</td>
+                <td class="num">10,219</td>
+                <td class="num">17.1%</td>
+                <td class="num"><span class="badge neg">&#9660; 0.4% vs LM</span></td>
+                <td class="num">8,616</td>
+            </tr>
+            <tr>
+                <td>Organic Search</td>
+                <td class="num">6,696</td>
+                <td class="num">11.2%</td>
+                <td class="num"><span class="badge pos">&#9650; 4.9% vs LM</span></td>
+                <td class="num">5,128</td>
+            </tr>
+            <tr>
+                <td>Cross-network</td>
+                <td class="num">3,568</td>
+                <td class="num">6.0%</td>
+                <td class="num"><span class="badge pos">&#9650; 8.8% vs LM</span></td>
+                <td class="num">3,258</td>
+            </tr>
+            <tr>
+                <td>Paid Other</td>
+                <td class="num">2,778</td>
+                <td class="num">4.6%</td>
+                <td class="num"><span class="badge pos">&#9650; new vs LM</span></td>
+                <td class="num">2,620</td>
+            </tr>
+            <tr>
+                <td>Unassigned</td>
+                <td class="num">870</td>
+                <td class="num">1.5%</td>
+                <td class="num"><span class="badge pos">&#9650; 5.8% vs LM</span></td>
+                <td class="num">851</td>
+            </tr>
+            <tr>
+                <td>AI Assistant</td>
+                <td class="num">565</td>
+                <td class="num">0.9%</td>
+                <td class="num"><span class="badge pos">&#9650; 46.8% vs LM</span></td>
+                <td class="num">460</td>
+            </tr>
+            <tr>
+                <td>Referral</td>
+                <td class="num">365</td>
+                <td class="num">0.6%</td>
+                <td class="num"><span class="badge pos">&#9650; 17.7% vs LM</span></td>
+                <td class="num">289</td>
+            </tr>
+            <tr>
+                <td>Organic Social</td>
+                <td class="num">311</td>
+                <td class="num">0.5%</td>
+                <td class="num"><span class="badge pos">&#9650; 38.2% vs LM</span></td>
+                <td class="num">284</td>
+            </tr>
+            <tr>
+                <td>Paid Video</td>
+                <td class="num">61</td>
+                <td class="num">0.1%</td>
+                <td class="num"><span class="badge neg">&#9660; 35.8% vs LM</span></td>
+                <td class="num">61</td>
+            </tr>
+            <tr>
+                <td>Mobile Push Notifications</td>
+                <td class="num">5</td>
+                <td class="num">0.0%</td>
+                <td class="num"><span class="badge pos">&#9650; 400.0% vs LM</span></td>
+                <td class="num">5</td>
+            </tr>
+            <tr>
+                <td>Organic Video</td>
+                <td class="num">2</td>
+                <td class="num">0.0%</td>
+                <td class="num"><span class="badge neu">—</span></td>
+                <td class="num">2</td>
+            </tr>
+            <tr>
+                <td>Display</td>
+                <td class="num">0</td>
+                <td class="num">0.0%</td>
+                <td class="num"><span class="badge neg">&#9660; 100.0% vs LM</span></td>
+                <td class="num">0</td>
+            </tr></tbody>
+    </table>
+</section>
+
+<section class="card">
+    <div class="section-title">Sales Performance</div>
+    <div class="section-sub">SERVCO is the only source of truth for gross adds.</div>
+    <div class="kpi-row">
+        <div class="kpi-card accent-pink">
+            <div class="kpi-label">Gross Adds (MTD)</div>
+            <div class="kpi-value">1,679</div>
+            <div class="kpi-sub"><span class="badge pos">&#9650; 1.3% vs LM</span></div>
+            <div class="rr-line">Run-rate <strong>2,082</strong> <span class="badge neg">&#9660; 0.5% vs full LM</span></div>
+        </div>
+        
+        
+    </div>
+</section>
+
+</body>
+</html>
