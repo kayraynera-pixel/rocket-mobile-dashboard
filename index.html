@@ -424,15 +424,15 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 <section class="card">
     <div class="section-title">Source Performance</div>
-    <div class="section-sub">Sessions and Conv. Rate by Session default channel group — Paid rolls up every "Paid *" group (Paid Search, Paid Social, Paid Other, Paid Video, Paid Shopping), Direct is "Direct" exactly, Organic rolls up every "Organic *" group, AI Assistant is its own group, and Other catches everything else (Referral, Cross-network, Unassigned, Display, Mobile Push Notifications, ...) so every session is accounted for. Conversions use the same GA4-purchases-x-accuracy-ratio calibration as Media Efficiency above, since SERVCO has no per-source breakdown to use directly.</div>
+    <div class="section-sub">Direct is Session default channel group "Direct" exactly, Organic rolls up every "Organic *" group, AI Assistant is its own group. Paid is summed from all six known ad channels' own GA4 attribution (Search, PMax, Meta, TikTok, ChatGPT, Twitch, Demand Gen) rather than GA4's own "Paid *" channel groups, which miscategorize Twitch/Demand Gen under groups like Display or Cross-network. Other is a residual (everything not in the four named groups) so every session is accounted for. Conversions use the same GA4-purchases-x-accuracy-ratio calibration as Media Efficiency above, since SERVCO has no per-source breakdown to use directly.</div>
     <table>
         <thead><tr><th>Source</th><th class="num">Sessions (MTD)</th><th class="num">Conv. Rate</th><th class="num">Conversions (MTD)</th></tr></thead>
         <tbody>
         <tr>
             <td>Paid</td>
-            <td class="num">7,976 <span class="badge pos">&#9650; 7.0% vs LM</span><div class="rr-line">Run-rate <strong>39,880</strong> <span class="badge neg">&#9660; 17.5% vs full LM</span></div></td>
-            <td class="num">1.52% <span class="badge neg">&#9660; 26.6% vs LM</span></td>
-            <td class="num">121 <span class="badge neg">&#9660; 21.5% vs LM</span><div class="rr-line">Run-rate <strong>606</strong> <span class="badge neg">&#9660; 32.9% vs full LM</span></div></td>
+            <td class="num">8,958 <span class="badge pos">&#9650; 9.4% vs LM</span><div class="rr-line">Run-rate <strong>44,790</strong> <span class="badge neg">&#9660; 14.8% vs full LM</span></div></td>
+            <td class="num">1.50% <span class="badge neg">&#9660; 25.8% vs LM</span></td>
+            <td class="num">134 <span class="badge neg">&#9660; 18.8% vs LM</span><div class="rr-line">Run-rate <strong>671</strong> <span class="badge neg">&#9660; 30.0% vs full LM</span></div></td>
         </tr>
         <tr>
             <td>Direct</td>
@@ -454,9 +454,9 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
         </tr>
         <tr>
             <td>Other</td>
-            <td class="num">1,392 <span class="badge pos">&#9650; 49.4% vs LM</span><div class="rr-line">Run-rate <strong>6,960</strong> <span class="badge pos">&#9650; 17.2% vs full LM</span></div></td>
-            <td class="num">1.38% <span class="badge neg">&#9660; 30.1% vs LM</span></td>
-            <td class="num">19 <span class="badge pos">&#9650; 4.4% vs LM</span><div class="rr-line">Run-rate <strong>96</strong> <span class="badge pos">&#9650; 0.4% vs full LM</span></div></td>
+            <td class="num">410 <span class="badge pos">&#9650; 108.1% vs LM</span><div class="rr-line">Run-rate <strong>2,050</strong> <span class="badge pos">&#9650; 16.9% vs full LM</span></div></td>
+            <td class="num">1.51% <span class="badge neg">&#9660; 59.7% vs LM</span></td>
+            <td class="num">6 <span class="badge neg">&#9660; 16.1% vs LM</span><div class="rr-line">Run-rate <strong>31</strong> <span class="badge neg">&#9660; 21.9% vs full LM</span></div></td>
         </tr></tbody>
     </table>
 </section>
