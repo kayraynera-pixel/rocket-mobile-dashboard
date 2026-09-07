@@ -77,6 +77,7 @@ body {
 
 .rr-line { font-size: 11px; color: var(--purple); margin-top: 6px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
 .rr-line strong { font-weight: 600; }
+td.num .rr-line { justify-content: flex-end; }
 
 .asof-table { font-size: 12px; margin-bottom: 24px; }
 .asof-table .card-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
@@ -303,7 +304,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 <section class="card">
     <div class="section-title">Traffic Levels</div>
-    <div class="section-sub">GA4 sessions/users, plus channel-mix breakdown. Conversions here are SERVCO's actual gross adds, not a raw GA4 conversion count.</div>
+    <div class="section-sub">GA4 sessions/users, new vs returning, plus channel-mix breakdown.</div>
     <div class="kpi-row" style="margin-bottom:18px;">
         <div class="kpi-card accent-teal">
             <div class="kpi-label">Sessions (MTD)</div>
@@ -318,10 +319,11 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
             <div class="rr-line">Run-rate <strong>62,335</strong> <span class="badge neg">&#9660; 7.1% vs full LM</span></div>
         </div>
         <div class="kpi-card accent-pink">
-            <div class="kpi-label">Conversions (MTD) <span class="tag">SERVCO</span></div>
-            <div class="kpi-value">382</div>
-            <div class="kpi-sub"><span class="badge pos">&#9650; 1.1% vs LM</span></div>
-            <div class="rr-line">Run-rate <strong>1,910</strong> <span class="badge neg">&#9660; 8.8% vs full LM</span></div>
+            <div class="kpi-label">New vs Returning (MTD)</div>
+            <div class="kpi-value" style="font-size:22px">9,539 new</div>
+            <div class="kpi-sub"><span class="badge pos">&#9650; 19.0% vs LM</span></div>
+            <div class="kpi-note" style="margin-top:8px;">2,928 returning <span class="badge pos">&#9650; 2.4% vs LM</span></div>
+            <div class="kpi-note" style="margin-top:4px;">76.5% of users are new</div>
         </div>
     </div>
     <table>
