@@ -424,7 +424,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 <section class="card">
     <div class="section-title">Source Performance</div>
-    <div class="section-sub">Sessions and Conv. Rate by Session default channel group — Paid rolls up every "Paid *" channel group (Paid Search, Paid Social, Paid Other, Paid Video, Paid Shopping), Direct is "Direct" exactly, Organic rolls up every "Organic *" group. Conversions use the same GA4-purchases-x-accuracy-ratio calibration as Media Efficiency above, since SERVCO has no per-source breakdown to use directly.</div>
+    <div class="section-sub">Sessions and Conv. Rate by Session default channel group — Paid rolls up every "Paid *" group (Paid Search, Paid Social, Paid Other, Paid Video, Paid Shopping), Direct is "Direct" exactly, Organic rolls up every "Organic *" group, AI Assistant is its own group, and Other catches everything else (Referral, Cross-network, Unassigned, Display, Mobile Push Notifications, ...) so every session is accounted for. Conversions use the same GA4-purchases-x-accuracy-ratio calibration as Media Efficiency above, since SERVCO has no per-source breakdown to use directly.</div>
     <table>
         <thead><tr><th>Source</th><th class="num">Sessions (MTD)</th><th class="num">Conv. Rate</th><th class="num">Conversions (MTD)</th></tr></thead>
         <tbody>
@@ -445,6 +445,18 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
             <td class="num">1,902 <span class="badge pos">&#9650; 24.6% vs LM</span></td>
             <td class="num">4.38% <span class="badge pos">&#9650; 0.6% vs LM</span></td>
             <td class="num">83 <span class="badge pos">&#9650; 25.3% vs LM</span></td>
+        </tr>
+        <tr>
+            <td>AI Assistant</td>
+            <td class="num">182 <span class="badge pos">&#9650; 75.0% vs LM</span></td>
+            <td class="num">6.05% <span class="badge neg">&#9660; 14.8% vs LM</span></td>
+            <td class="num">11 <span class="badge pos">&#9650; 49.2% vs LM</span></td>
+        </tr>
+        <tr>
+            <td>Other</td>
+            <td class="num">1,392 <span class="badge pos">&#9650; 49.4% vs LM</span></td>
+            <td class="num">1.38% <span class="badge neg">&#9660; 30.1% vs LM</span></td>
+            <td class="num">19 <span class="badge pos">&#9650; 4.4% vs LM</span></td>
         </tr></tbody>
     </table>
 </section>
